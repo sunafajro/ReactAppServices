@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="react-root" class="container-fluid"></div>
+    <script type="text/javascript">
+        var tableHeader = [{
+            id: 'id',
+            title: '#',
+            show: true
+        },{
+            id: 'nomination',
+            title: 'Название',
+            show: true
+        },{
+            id: 'type',
+            title: 'Тип услуги',
+            show: true
+        },{
+            id: '1-lesson',
+            title: '1-занятие',
+            show: true
+        },{
+            id: '5-lesson',
+            title: '5-занятий',
+            show: true
+        },{
+            id: '8-lesson',
+            title: '8-занятий',
+            show: true
+        },{
+            id: 'duration',
+            title: 'Продолжительность',
+            show: true
+        },{
+            id: 'until',
+            title: 'Действ. до',
+            show: true
+        },{ 
+            id: 'actions',
+            title: 'Действ.',
+            show: true
+        }];
+
+    var tableData = [
+        {
+        id: '708',
+        city: '1',
+        nomination: 'арабский индивидуально взрослые',
+        type: 'обучение',
+        lesson_1: '700',
+        lesson_5: '3500',
+        lesson_8: '5600',
+        duration: '1 час',
+        until: '2019-01-01',
+        actions: true    },
+        {
+        id: '569',
+        city: '1',
+        nomination: 'чувашский индивидуально взрослые',
+        type: 'обучение',
+        lesson_1: '450',
+        lesson_5: '2250',
+        lesson_8: '3600',
+        duration: '1 час',
+        until: '2018-12-03',
+        actions: true    },
+        {
+        id: '652',
+        city: '1',
+        nomination: 'испанский индивидуально средние школьники',
+        type: 'обучение',
+        lesson_1: '550',
+        lesson_5: '2750',
+        lesson_8: '4400',
+        duration: '1 час',
+        until: '2018-12-01',
+        actions: true    },
+        {
+        id: '709',
+        city: '1',
+        nomination: 'английский мини-группа младшие школьники (*)',
+        type: 'обучение',
+        lesson_1: '400',
+        lesson_5: '2000',
+        lesson_8: '3200',
+        duration: '1 час',
+        until: '2018-09-08',
+        actions: true    },
+        {
+        id: '601',
+        city: '1',
+        nomination: 'турецкий мини-группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час',
+        until: '2018-03-02',
+        actions: true    },
+        {
+        id: '584',
+        city: '1',
+        nomination: 'испанский мини-группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час',
+        until: '2018-03-01',
+        actions: true    },
+        {
+        id: '592',
+        city: '1',
+        nomination: 'испанский индивидуально старшеклассники',
+        type: 'обучение',
+        lesson_1: '600',
+        lesson_5: '3000',
+        lesson_8: '4800',
+        duration: '1 час',
+        until: '2018-03-01',
+        actions: true    },
+        {
+        id: '603',
+        city: '1',
+        nomination: 'турецкий группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час 30 мин',
+        until: '2018-03-01',
+        actions: true    },
+        {
+        id: '622',
+        city: '1',
+        nomination: 'испанский индивидуально взрослые',
+        type: 'обучение',
+        lesson_1: '700',
+        lesson_5: '3500',
+        lesson_8: '5600',
+        duration: '1 час',
+        until: '2018-03-01',
+        actions: true    },
+        {
+        id: '643',
+        city: '1',
+        nomination: 'турецкий индивидуально взрослые',
+        type: 'обучение',
+        lesson_1: '700',
+        lesson_5: '3500',
+        lesson_8: '5600',
+        duration: '1 час',
+        until: '2018-03-01',
+        actions: true    },
+        {
+        id: '583',
+        city: '1',
+        nomination: 'испанский группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час 30 мин',
+        until: '2018-02-01',
+        actions: true    },
+        {
+        id: '355',
+        city: '1',
+        nomination: 'испанский_индивидуально_млад школьник',
+        type: 'обучение',
+        lesson_1: '500',
+        lesson_5: '2500',
+        lesson_8: '4000',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '386',
+        city: '1',
+        nomination: 'французский_индивидуально_взрослый',
+        type: 'обучение',
+        lesson_1: '700',
+        lesson_5: '3500',
+        lesson_8: '5600',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '441',
+        city: '1',
+        nomination: 'немецкий индивидуально старшеклассник',
+        type: 'обучение',
+        lesson_1: '600',
+        lesson_5: '3000',
+        lesson_8: '4800',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '447',
+        city: '1',
+        nomination: 'испанский мини-группа старшеклассники',
+        type: 'обучение',
+        lesson_1: '375',
+        lesson_5: '1875',
+        lesson_8: '3000',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '466',
+        city: '1',
+        nomination: 'английский индивидуально взрослый 1,5',
+        type: 'обучение',
+        lesson_1: '1050',
+        lesson_5: '5250',
+        lesson_8: '8400',
+        duration: '1 час 30 мин',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '530',
+        city: '1',
+        nomination: 'английский группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час 30 мин',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '531',
+        city: '1',
+        nomination: 'английский мини-группа взрослые',
+        type: 'обучение',
+        lesson_1: '438',
+        lesson_5: '2188',
+        lesson_8: '3500',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '532',
+        city: '1',
+        nomination: 'английский индивидуально взрослые',
+        type: 'обучение',
+        lesson_1: '700',
+        lesson_5: '3500',
+        lesson_8: '5600',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '533',
+        city: '1',
+        nomination: 'английский группа старшеклассники',
+        type: 'обучение',
+        lesson_1: '375',
+        lesson_5: '1875',
+        lesson_8: '3000',
+        duration: '1 час 30 мин',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '534',
+        city: '1',
+        nomination: 'английский мини-группа старшеклассники',
+        type: 'обучение',
+        lesson_1: '375',
+        lesson_5: '1875',
+        lesson_8: '3000',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '535',
+        city: '1',
+        nomination: 'английский индивидуально старшеклассники',
+        type: 'обучение',
+        lesson_1: '600',
+        lesson_5: '3000',
+        lesson_8: '4800',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '537',
+        city: '1',
+        nomination: 'английский мини-группа средние школьники',
+        type: 'обучение',
+        lesson_1: '325',
+        lesson_5: '1625',
+        lesson_8: '2600',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '538',
+        city: '1',
+        nomination: 'английский индивидуально средние школьники',
+        type: 'обучение',
+        lesson_1: '550',
+        lesson_5: '2750',
+        lesson_8: '4400',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        {
+        id: '540',
+        city: '1',
+        nomination: 'английский мини-группа младшие школьники',
+        type: 'обучение',
+        lesson_1: '325',
+        lesson_5: '1625',
+        lesson_8: '2600',
+        duration: '1 час',
+        until: '2018-01-01',
+        actions: true    },
+        ];
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </body>
+</html>
