@@ -1,12 +1,10 @@
 import React from 'react';
 
-export default ({ term, update }) => {
+export default ({ term, update, name, placeholder }) => {
 
   const dataSearch = e => {
     const value = e.target.value;
-
-    update('id', value);
-    
+    update(name, value);
   };
 
   return (
@@ -14,7 +12,7 @@ export default ({ term, update }) => {
     <input
       type="text"
       className="form-control input-sm"
-      placeholder="Найти по id..."
+      placeholder={ placeholder }
       onChange={ dataSearch }
       value={ term }
     />
