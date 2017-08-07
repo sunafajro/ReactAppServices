@@ -173,7 +173,7 @@ class Modal extends React.Component {
               />
             </div>
             <div className="modal-footer">
-              <button className="btn btn-primary" onClick={this.sendData}>
+              <button className="btn btn-primary" onClick={this.handleSubmition}>
                 Добавить
               </button>
             </div>
