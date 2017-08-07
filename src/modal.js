@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import Input from "./input";
 import Select from './select';
 
@@ -13,15 +14,64 @@ class Modal extends React.Component {
             eduage_id: '',
             eduform_id: '',
             timenorm_id: '',
-            studnorm_id: ''
+            studnorm_id: '',
+            validation: {
+              name: 'form-group',
+              city_id: 'form-group',
+              type_id: 'form-group',
+              language_id: 'form-group',
+              eduage_id: 'form-group',
+              eduform_id: 'form-group',
+              timenorm_id: 'form-group',
+              studnorm_id: 'form-group',
+            }
         };
     }
 
   updateState = (id, value) => {
+    let validation = { ...this.state.validation };
+    validation[id] = ((value !== '' && value !== 'all') ? 'form-group has-success' : 'form-group has-error');
+
     this.setState({
-      [id]: value
+      [id]: value,
+      validation
     });
   };
+
+  /* валидируем поля формы */
+  fieldsValidation = () => {
+    let isValid = true;
+    let validation = { ...this.state.validation };
+    /* создаем массив из ключей объекта state */
+    let arr = Object.keys(this.state);
+    /* отбраысваем последний ключ */
+    arr.pop();
+    /* проходим по массиву */
+    arr.map(item => {
+      if(this.state[item] !== '' && this.state[item] !== 'all') {
+        validation[item] = 'form-group has-success';
+      } else {
+        validation[item] = 'form-group has-error';
+        isValid = false;
+      }
+    });
+    this.setState({ validation });
+    return isValid;
+  }
+
+  /* если валидация прошла отсылаем данные на сервер */
+  sendData = () => {
+
+  }
+
+  /* метод обработки отправки формы */
+  handleSubmition = () => {
+    if(this.fieldsValidation()) {
+      this.sendData();
+    } else {
+      return false;
+    }
+  }
 
   render = () => {
     return (
@@ -49,52 +99,77 @@ class Modal extends React.Component {
             </div>
             <div className="modal-body">
               <Input
-                placeholder="Введите название..."
-                term={this.state.name}
-                name='name'
-                update={this.updateState}
+                options={{ 
+                  placeholder: 'Введите название...', 
+                  term: this.state.name, 
+                  name: 'name',
+                  validation: this.state.validation.name
+                  }}
+                update={ this.updateState }
               />
               <Select
-                term={this.state.type_id}
-                update={this.updateState}
-                name="type_id"
-                options={this.props.filters.types}
+                options={{ 
+                  term: this.state.type_id,
+                  name: 'type_id',
+                  validation: this.state.validation.type_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.types }
+                
               />
               <Select
-                term={this.state.eduage_id}
-                update={this.updateState}
-                name="eduage_id"
-                options={this.props.filters.eduages}
+                options={{ 
+                  term: this.state.eduage_id,
+                  name: 'eduage_id',
+                  validation: this.state.validation.eduage_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.eduages }
               />
               <Select
-                term={this.state.language_id}
-                update={this.updateState}
-                name="language_id"
-                options={this.props.filters.languages}
+                options={{
+                  term: this.state.language_id,
+                  name: 'language_id',
+                  validation: this.state.validation.language_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.languages }
               />
               <Select
-                term={this.state.eduform_id}
+                options={{
+                  term: this.state.eduform_id,
+                  name: 'eduform_id',
+                  validation: this.state.validation.eduform_id
+                }}
                 update={this.updateState}
-                name="eduform_id"
-                options={this.props.filters.eduforms}
+                filter={this.props.filters.eduforms}
               />
               <Select
-                term={this.state.timenorm_id}
-                update={this.updateState}
-                name="timenorm_id"
-                options={this.props.filters.timenorms}
+                options={{
+                  term: this.state.timenorm_id,
+                  name: 'timenorm_id',
+                  validation: this.state.validation.timenorm_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.timenorms }
               />
               <Select
-                term={this.state.city_id}
-                update={this.updateState}
-                name="city_id"
-                options={this.props.filters.cities}
+                options={{
+                  term: this.state.city_id,
+                  name: 'city_id',
+                  validation: this.state.validation.city_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.cities }
               />
               <Select
-                term={this.state.studnorm_id}
-                update={this.updateState}
-                name="studnorm_id"
-                options={this.props.filters.studnorms}
+                options={{
+                  term: this.state.studnorm_id,
+                  name: 'studnorm_id',
+                  validation: this.state.validation.studnorm_id
+                }}
+                update={ this.updateState }
+                filter={ this.props.filters.studnorms }
               />
             </div>
             <div className="modal-footer">
@@ -107,6 +182,11 @@ class Modal extends React.Component {
       </div>
     );
   };
+}
+
+/* проверяем props */
+Modal.propTypes = {
+  filters: PropTypes.object.isRequired,
 }
 
 export default Modal;

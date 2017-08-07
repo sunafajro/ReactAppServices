@@ -1,21 +1,33 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default ({ term, update, name, placeholder }) => {
+class Input extends React.Component {
 
-  const dataSearch = e => {
-    const value = e.target.value;
-    update(name, value);
+  dataSearch = (e) => {
+    let value = e.target.value;
+    let name = this.props.options.name;
+    this.props.update(name, value);
   };
 
-  return (
-    <div className="form-group">
-    <input
-      type="text"
-      className="form-control input-sm"
-      placeholder={ placeholder }
-      onChange={ dataSearch }
-      value={ term }
-    />
-    </div>
-  );
+  render() {
+    return (
+      <div className={this.props.options.validation}>
+        <input
+          type="text"
+          className="form-control input-sm"
+          placeholder={ this.props.options.placeholder }
+          onChange={ this.dataSearch }
+          value={ this.props.options.term }
+        />
+      </div>
+    );
+  }
 };
+
+/* проверяем props */
+Input.propTypes = {
+  options: PropTypes.object.isRequired,
+  update: PropTypes.func.isRequired
+}
+
+export default Input;

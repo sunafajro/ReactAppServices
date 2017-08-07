@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Table from './table';
 import Input from './input';
 import Select from './select';
 import Modal from './modal';
 
-export default class App extends React.Component {
+class App extends React.Component {
 
   constructor(props) {
     super(props);
@@ -77,40 +78,58 @@ export default class App extends React.Component {
           <button className="btn btn-success btn-sm btn-block" onClick={this.showModal}><i className="fa fa-plus" aria-hidden="true"></i> Добавить</button>
           <h4>Фильтры</h4>
           <Input
-            placeholder="Введите id..."
-            term={ this.state.filter.id }
-            name="id"
+            options={{
+            placeholder: 'Введите id...',
+            term: this.state.filter.id,
+            name: 'id',
+            validation: 'form-group'
+            }}
             update={ this.updateState }
           />
           <Select
-            term={ this.state.filter.city_id }
+            options={{
+              term: this.state.filter.city_id,
+              name: 'city_id',
+              validation: 'form-group'
+            }}
             update={ this.updateState }
-            name="city_id"
-            options={ this.props.filters.cities }
+            filter={ this.props.filters.cities }
           />
           <Select
-            term={ this.state.filter.type_id }
+            options={{
+              term: this.state.filter.type_id,
+              name: 'type_id',
+              validation: 'form-group'
+            }}
             update={ this.updateState }
-            name="type_id"
-            options={ this.props.filters.types }
+            filter={ this.props.filters.types }
           />
           <Select
-            term={ this.state.filter.language_id }
+            options={{
+              term: this.state.filter.language_id,
+              name: 'language_id',
+              validation: 'form-group'
+            }}
             update={ this.updateState }
-            name="language_id"
-            options={ this.props.filters.languages }
+            filter={ this.props.filters.languages }
           />
           <Select
-            term={ this.state.filter.eduage_id }
+            options={{
+              term: this.state.filter.eduage_id,
+              name: 'eduage_id',
+              validation: 'form-group'
+            }}
             update={ this.updateState }
-            name="eduage_id"
-            options={ this.props.filters.eduages }
+            filter={ this.props.filters.eduages }
           />
           <Select
-            term={ this.state.filter.eduform_id }
+            options={{
+              term: this.state.filter.eduform_id,
+              name: 'eduform_id',
+              validation: 'form-group'
+            }}
             update={ this.updateState }
-            name="eduform_id"
-            options={ this.props.filters.eduforms }
+            filter={ this.props.filters.eduforms }
           />
         </div>
         <div id="content" className="col-sm-10">
@@ -121,3 +140,12 @@ export default class App extends React.Component {
     );
   }
 }
+
+/* проверяем props */
+App.propTypes = {
+  header: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
+  filters: PropTypes.object.isRequired
+}
+
+export default App;
