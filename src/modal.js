@@ -2,11 +2,15 @@ import React from "react";
 import PropTypes from 'prop-types';
 import Input from "./input";
 import Select from './select';
+import DatePicker from 'react-bootstrap-date-picker';
 
 class Modal extends React.Component {
   constructor(props) {
       super(props)
         this.state = {
+          rawDate: '',
+          data: {
+            date: '',
             name: '',
             city_id: '',
             type_id: '',
@@ -14,26 +18,31 @@ class Modal extends React.Component {
             eduage_id: '',
             eduform_id: '',
             timenorm_id: '',
-            studnorm_id: '',
-            validation: {
-              name: 'form-group',
-              city_id: 'form-group',
-              type_id: 'form-group',
-              language_id: 'form-group',
-              eduage_id: 'form-group',
-              eduform_id: 'form-group',
-              timenorm_id: 'form-group',
-              studnorm_id: 'form-group',
-            }
+            studnorm_id: ''
+          },
+          validation: {
+            date: 'form-group',
+            name: 'form-group',
+            city_id: 'form-group',
+            type_id: 'form-group',
+            language_id: 'form-group',
+            eduage_id: 'form-group',
+            eduform_id: 'form-group',
+            timenorm_id: 'form-group',
+            studnorm_id: 'form-group',
+          },
+          formSendError: false
         };
     }
 
   updateState = (id, value) => {
+    let data = { ...this.state.data };
     let validation = { ...this.state.validation };
+    data[id] = value;
     validation[id] = ((value !== '' && value !== 'all') ? 'form-group has-success' : 'form-group has-error');
 
     this.setState({
-      [id]: value,
+      data,
       validation
     });
   };
@@ -43,25 +52,55 @@ class Modal extends React.Component {
     let isValid = true;
     let validation = { ...this.state.validation };
     /* создаем массив из ключей объекта state */
-    let arr = Object.keys(this.state);
-    /* отбраысваем последний ключ */
-    arr.pop();
+    let arr = Object.keys(this.state.data);
     /* проходим по массиву */
     arr.map(item => {
-      if(this.state[item] !== '' && this.state[item] !== 'all') {
+      if(this.state.data[item] !== '' && this.state.data[item] !== 'all') {
         validation[item] = 'form-group has-success';
       } else {
         validation[item] = 'form-group has-error';
         isValid = false;
       }
     });
+    
     this.setState({ validation });
     return isValid;
   }
 
   /* если валидация прошла отсылаем данные на сервер */
   sendData = () => {
-
+    const CalcService = {
+      name: this.state.data.name,
+      calc_city: this.state.data.city_id,
+      calc_servicetype: this.state.data.type_id,
+      calc_lang: this.state.data.language_id,
+      calc_eduage: this.state.data.eduage_id,
+      calc_eduform: this.state.data.eduform_id,
+      calc_timenorm: this.state.data.timenorm_id,
+      calc_studnorm: this.state.data.studnorm_id,
+      date: this.state.data.date
+    };
+    fetch('/service/create', {
+      method: 'POST',
+      accept: 'application/json',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({CalcService})
+    })
+    .then(response => response.json())
+    .then(json => {
+      if(json.response === 'success') {
+        this.setState({ formSendError: false });
+        this.props.close();
+      } else {
+        this.setState({ formSendError: true });
+      }
+    })
+    .catch(err => {
+      this.setState({ formSendError: true });
+    });
   }
 
   /* метод обработки отправки формы */
@@ -71,6 +110,17 @@ class Modal extends React.Component {
     } else {
       return false;
     }
+  }
+
+  /* метод обрабатывает изменения в поле даты */
+  handleDate = (value, formattedValue) => {
+    let data = { ...this.state.data };
+    data.date = formattedValue;
+
+    this.setState({
+      rawDate: value,
+      data
+    });
   }
 
   render = () => {
@@ -98,10 +148,19 @@ class Modal extends React.Component {
               </h4>
             </div>
             <div className="modal-body">
+              <div className={ this.state.validation.date }>
+                <DatePicker 
+                  value={ this.state.rawDate }
+                  onChange={ this.handleDate }
+                  dateFormat='DD/MM/YYYY'
+                  dayLabels={ ['вс','пн','вт','ср','чт','пт','сб'] }
+                  weekStartsOn={1}
+                />
+              </div>
               <Input
                 options={{ 
                   placeholder: 'Введите название...', 
-                  term: this.state.name, 
+                  term: this.state.data.name, 
                   name: 'name',
                   validation: this.state.validation.name
                   }}
@@ -109,7 +168,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{ 
-                  term: this.state.type_id,
+                  term: this.state.data.type_id,
                   name: 'type_id',
                   validation: this.state.validation.type_id
                 }}
@@ -119,7 +178,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{ 
-                  term: this.state.eduage_id,
+                  term: this.state.data.eduage_id,
                   name: 'eduage_id',
                   validation: this.state.validation.eduage_id
                 }}
@@ -128,7 +187,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{
-                  term: this.state.language_id,
+                  term: this.state.data.language_id,
                   name: 'language_id',
                   validation: this.state.validation.language_id
                 }}
@@ -137,7 +196,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{
-                  term: this.state.eduform_id,
+                  term: this.state.data.eduform_id,
                   name: 'eduform_id',
                   validation: this.state.validation.eduform_id
                 }}
@@ -146,7 +205,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{
-                  term: this.state.timenorm_id,
+                  term: this.state.data.timenorm_id,
                   name: 'timenorm_id',
                   validation: this.state.validation.timenorm_id
                 }}
@@ -155,7 +214,7 @@ class Modal extends React.Component {
               />
               <Select
                 options={{
-                  term: this.state.city_id,
+                  term: this.state.data.city_id,
                   name: 'city_id',
                   validation: this.state.validation.city_id
                 }}
@@ -164,13 +223,17 @@ class Modal extends React.Component {
               />
               <Select
                 options={{
-                  term: this.state.studnorm_id,
+                  term: this.state.data.studnorm_id,
                   name: 'studnorm_id',
                   validation: this.state.validation.studnorm_id
                 }}
                 update={ this.updateState }
                 filter={ this.props.filters.studnorms }
               />
+              { this.state.formSendError ?
+                <div className="alert alert-danger"><b>Ошибка!</b> Неудалось добавить услугу.</div>
+                : ''
+              }
             </div>
             <div className="modal-footer">
               <button className="btn btn-primary" onClick={this.handleSubmition}>
