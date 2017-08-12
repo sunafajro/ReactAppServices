@@ -15,8 +15,12 @@
     "babel-polyfill": "^6.23.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
+    "react-bootstrap": "^0.31.2",
+    "react-bootstrap-date-picker": "^5.1.0",
+    "react-bootstrap-datetimepicker": "0.0.22",
     "react-dom": "^15.6.1"
   },
+  "proxy": "localhost:8000",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
