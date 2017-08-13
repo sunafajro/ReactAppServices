@@ -31,8 +31,11 @@ class Modal extends React.Component {
             timenorm_id: 'form-group',
             studnorm_id: 'form-group',
           },
-          formSendError: false
+          serverError: false,
+          clientError: false,
+          error: ''
         };
+        this.initialState = { ...this.state };
     }
 
   updateState = (id, value) => {
@@ -91,15 +94,20 @@ class Modal extends React.Component {
     })
     .then(response => response.json())
     .then(json => {
-      if(json.response === 'success') {
-        this.setState({ formSendError: false });
-        this.props.close();
+      if(json.code === 200) {
+        /* передаем услугу в родительское состояние */
+        this.props.update(json.service);
+        /* сбрасываем состояние на дефолтное */
+        this.setState(this.initialState);
       } else {
-        this.setState({ formSendError: true });
+        this.setState({ serverError: true });
       }
     })
     .catch(err => {
-      this.setState({ formSendError: true });
+      this.setState({
+        clientError: true,
+        error: err
+      });
     });
   }
 
@@ -230,8 +238,12 @@ class Modal extends React.Component {
                 update={ this.updateState }
                 filter={ this.props.filters.studnorms }
               />
-              { this.state.formSendError ?
-                <div className="alert alert-danger"><b>Ошибка!</b> Неудалось добавить услугу.</div>
+              { this.state.serverError ?
+                <div className="alert alert-danger"><b>Ошибка сервера!</b> Неудалось добавить услугу.</div>
+                : ''
+              }
+              { this.state.clientError ?
+                <div className="alert alert-danger"><b>Ошибка приложения!</b> Неудалось добавить услугу.</div>
                 : ''
               }
             </div>
@@ -249,7 +261,8 @@ class Modal extends React.Component {
 
 /* проверяем props */
 Modal.propTypes = {
-  filters: PropTypes.object.isRequired,
+  update: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired
 }
 
 export default Modal;
