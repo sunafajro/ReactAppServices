@@ -1,28 +1,28 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const CleanWebpackPlugin = require('clean-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
  
 module.exports = {
   entry: [
-    'babel-polyfill',
+    // 'babel-polyfill',
     './index.js'
   ],
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
   output: { 
     path: path.resolve(__dirname, 'dist'), 
     filename: 'bundle.js'
   },
-  devServer: {
-    contentBase: './dist'
-  },
-  plugins: [
-    new CleanWebpackPlugin(['dist']),
-    new HtmlWebpackPlugin({
-      title: 'Development',
-      template: 'index.ejs',
-    })
-  ],
+  // devServer: {
+  //   contentBase: './dist'
+  // },
+  // plugins: [
+  //   new CleanWebpackPlugin(['dist']),
+  //   new HtmlWebpackPlugin({
+  //     title: 'Development',
+  //     template: 'index.ejs',
+  //   })
+  // ],
   module: {
     loaders: [
       {
