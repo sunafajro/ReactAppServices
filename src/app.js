@@ -27,16 +27,28 @@ class App extends React.Component {
         eduage_id: '',
         eduform_id: ''
     },
+    counts: {
+      start: 0,
+      end: 0,
+      total: 0
+    },
     formElements: {},
     filteredData: [],
     inProgress: false,
+    isFetchingData: false,
     showCreateButton: false,
+    currentPage: 1,
     error: false
   };
-
-  emtyFilter = { ...this.state.filter };
+  /* делаем дефолтную копию пустого фильтра */
+  emptyFilter = { ...this.state.filter };
 
   componentDidMount = () => {
+    this.getInitialData();
+  }
+
+  /* получаем первоначальные данны */
+  getInitialData = () => {
     this.setState({ inProgress: true });
     fetch('/service/getservices',
     { 
@@ -55,12 +67,25 @@ class App extends React.Component {
         filters: json.tableFilters,
         filteredData: json.tableData,
         inProgress: false,
+        counts: json.dataRange,
         showCreateButton: json.showCreateButton
       });
     })
     .catch(err => {
       this.setState({ error: true });
     });
+  }
+
+  /* метод увеличивает счетчик текущей страницы и вызывает метод обновления данных */
+  nextPage = () => {
+    const currentPage = this.state.currentPage + 1;
+    this.applyFilter(currentPage, { ...this.state.filter });
+  }
+
+  /* метод уменьшает счетчик текущей страницы и вызывает метод обновления данных */
+  previousPage = () => {
+    const currentPage = this.state.currentPage - 1;
+    this.applyFilter(currentPage, { ...this.state.filter });
   }
 
   /** 
@@ -78,29 +103,71 @@ class App extends React.Component {
   }
 
   /* метод применяет фильтрацию на данные таблицы */
-  applyFilter = () => {
-    let filteredData = [ ...this.state.data ];
-    let filter = { ...this.state.filter };
+  applyFilter = (num = 1, filters = { ...this.emptyFilter }) => {
+    this.setState({ isFetchingData: true });
 
-    ['id', 'city_id', 'type_id', 'language_id', 'eduage_id', 'eduform_id'].forEach(item => {
-      let filterValue = filter[item];
-      if (filterValue) {
-        filteredData = filteredData.filter(row => {
-          return row[item].includes(filter[item] !== 'all' ? filter[item] : '' );
-        });
+    const Filter = {
+      page: num,
+      filters: {
+        id: filters.id !== '' ? filters.id : '0',
+        city: filters.city_id !== '' ? filters.city_id : '0',
+        type: filters.type_id !== '' ? filters.type_id : '0',
+        lang: filters.language_id !== '' ? filters.language_id : '0',
+        age: filters.eduage_id !== '' ? filters.eduage_id : '0',
+        form: filters.eduform_id !== '' ? filters.eduform_id : '0'
       }
-    });
+    };
 
-    this.setState({
-      filteredData
-    }); 
+    fetch('/service/getservices',
+    { 
+      method: 'POST',
+      accept: 'application/json',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({Filter})
+    })
+    .then(response => response.json())
+    .then(json => {
+      this.setState({
+        data: json.tableData,
+        filteredData: json.tableData,
+        isFetchingData: false,
+        counts: json.dataRange,
+        currentPage: num
+      });
+    })
+    .catch(err => {
+      this.setState({ error: true });
+    });
   }
 
-  /* метод сбрасывает значения фильтров */
+  /* обработчик кнопок Применить и Сбросить */
+  handleBtnClick = (action = 'reset') => {
+    /* проверяем что фильтр задан */
+    let filterNotEmpty = false;
+    Object.keys(this.state.filter).forEach(item => {
+      if (this.state.filter[item] !== '') {
+        filterNotEmpty = true;
+      }
+    });
+    if (filterNotEmpty) {
+      /* метод сбрасывает значения фильтров и перезапрашивает исходные данные */
+      if (action === 'reset') {
+        this.resetFilter();
+        /* применяем фильтр */
+        this.applyFilter(1, { ...this.emptyFilter });
+      } else {
+        /* применяем фильтр */
+        this.applyFilter(1, { ...this.state.filter });
+      }
+    } 
+  }
+
   resetFilter = () => {
     this.setState({
-      filter: { ...this.emtyFilter },
-      filteredData: [ ...this.state.data ]
+      filter: { ...this.emptyFilter }
     });
   }
 
@@ -201,10 +268,21 @@ class App extends React.Component {
               update={ this.updateFilter }
               filter={ this.state.filters.eduforms }
             />
-            <Filter apply={this.applyFilter} reset={this.resetFilter} />
+            <Filter click={this.handleBtnClick} />
           </div>
           <div id="content" className="col-sm-10">
-              <Table data={ this.state.filteredData } header={ this.state.header } />
+            { this.state.isFetchingData ?
+              <div className="alert alert-warning"><b>Подождите.</b> Идет загрузка данных...</div>
+              :
+              <Table
+                data={ this.state.filteredData }
+                header={ this.state.header }
+                counts={ this.state.counts }
+                next={ this.nextPage }
+                previous={ this.previousPage }
+                page={ this.state.currentPage }
+              />
+            }
           </div>
           <Modal filters={ this.state.filters } update={ this.updateData } />
           </div>

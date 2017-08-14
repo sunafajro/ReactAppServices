@@ -8,10 +8,10 @@ class Filter extends React.Component {
   render() {
     return (
       <div className="form-group">
-        <button onClick={ this.props.apply } className="btn btn-info btn-sm" style={{ width: '49%'}}>
+        <button onClick={ e => this.props.click('apply') } className="btn btn-info btn-sm" style={{ width: '49%'}}>
           <i className="fa fa-filter" aria-hidden="true"></i> Применить
         </button>
-        <button onClick={ this.props.reset } className="btn btn-warning btn-sm pull-right" style={{ width: '49%'}}>
+        <button onClick={ e => this.props.click('reset') } className="btn btn-warning btn-sm pull-right" style={{ width: '49%'}}>
           <i className="fa fa-eraser" aria-hidden="true"></i> Сброс
         </button>
       </div>
@@ -21,8 +21,7 @@ class Filter extends React.Component {
 
 /* проверяем props */
 Filter.propTypes = {
-  apply: PropTypes.func.isRequired,
-  reset: PropTypes.func.isRequired
+  click: PropTypes.func.isRequired
 }
 
 export default Filter;
