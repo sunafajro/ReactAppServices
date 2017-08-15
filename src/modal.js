@@ -32,6 +32,8 @@ class Modal extends React.Component {
             studnorm_id: 'form-group',
           },
           serverError: false,
+          errorCode: '',
+          errorMessage: '',
           clientError: false,
           error: ''
         };
@@ -96,11 +98,16 @@ class Modal extends React.Component {
     .then(json => {
       if(json.code === 200) {
         /* передаем услугу в родительское состояние */
+        this.props.showAlert(json.code, json.message);
         this.props.update(json.service);
         /* сбрасываем состояние на дефолтное */
         this.setState(this.initialState);
       } else {
-        this.setState({ serverError: true });
+        this.setState({
+          serverError: true,
+          errorCode: json.code,
+          errorMessage: json.message
+        });
       }
     })
     .catch(err => {
@@ -239,7 +246,7 @@ class Modal extends React.Component {
                 filter={ this.props.filters.studnorms }
               />
               { this.state.serverError ?
-                <div className="alert alert-danger"><b>Ошибка сервера!</b> Неудалось добавить услугу.</div>
+                <div className="alert alert-danger"><b>{ this.state.errorCode }</b> { this.state.errorMessage }</div>
                 : ''
               }
               { this.state.clientError ?
@@ -262,7 +269,8 @@ class Modal extends React.Component {
 /* проверяем props */
 Modal.propTypes = {
   update: PropTypes.func.isRequired,
-  filters: PropTypes.object.isRequired
+  filters: PropTypes.object.isRequired,
+  showAlert: PropTypes.func.isRequired
 }
 
 export default Modal;

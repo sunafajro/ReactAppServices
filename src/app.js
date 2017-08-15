@@ -4,6 +4,7 @@ import Input from './input';
 import Select from './select';
 import Modal from './modal';
 import Filter from './filter';
+import Alert from './alert';
 
 class App extends React.Component {
 
@@ -38,11 +39,16 @@ class App extends React.Component {
     isFetchingData: false,
     showCreateButton: false,
     currentPage: 1,
-    error: false
+    error: false,
+    alert: {
+      show: false,
+      code: 0,
+      message: ''
+    }
   };
   /* делаем дефолтную копию пустого фильтра */
   emptyFilter = { ...this.state.filter };
-
+  emptyAlert = { ...this.state.alert };
   componentDidMount = () => {
     this.getInitialData();
   }
@@ -135,7 +141,8 @@ class App extends React.Component {
         filteredData: json.tableData,
         isFetchingData: false,
         counts: json.dataRange,
-        currentPage: num
+        currentPage: num,
+        filter: filters
       });
     })
     .catch(err => {
@@ -165,6 +172,7 @@ class App extends React.Component {
     } 
   }
 
+  /* сбрасываем фильтр на пустой дефолтный */
   resetFilter = () => {
     this.setState({
       filter: { ...this.emptyFilter }
@@ -176,12 +184,9 @@ class App extends React.Component {
    * @param {object} service
    */
   updateData = (service) => {
-    let data = [ ...this.state.data ];
-    let id = service.id;
-    data.push(service);
-    this.setState({ data });
-    this.updateFilter('id', id);
-    this.applyFilter();
+    let filter = { ...this.state.filter };
+    filter.id = service.id;
+    this.applyFilter(1, filter);
     this.hideModal();
   }
 
@@ -193,6 +198,54 @@ class App extends React.Component {
   /* метод закрывает модальное окно */
   hideModal = () => {
     $('#service-modal').modal('hide');
+  }
+
+  /* метод показывает некоторые уведомления */
+  showAlert = (code = '', message = '') => {
+    let alert = { ...this.state.alert };
+    alert.show = true;
+    alert.code = code;
+    alert.message = message;
+
+    this.setState({
+      alert
+    });
+
+    window.setTimeout(() => {
+      this.setState({
+        alert: { ...this.emptyAlert}
+      });
+    }, 3000);
+  }
+
+  /* метод удаляет услугу (помечает удаленной) */
+  deleteService = (id) => {
+    if(confirm('Вы уверены?')) {
+      fetch('/service/delete',
+      { 
+        method: 'POST',
+        accept: 'application/json',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({id})
+      })
+      .then(response => response.json())
+      .then(json => {
+        /* вызываем оповещение о событии */
+        this.showAlert(json.code, json.message);
+        /* если услуга успешно удалена */
+        if(json.code === 200) {
+          let filter = { ...this.state.filter };
+          filter.id = '';
+          this.applyFilter( this.state.currentPage, filter );
+        }
+      })
+      .catch(err => {
+        this.setState({ error: true });
+      });
+    }
   }
 
   render() {
@@ -271,9 +324,14 @@ class App extends React.Component {
             <Filter click={this.handleBtnClick} />
           </div>
           <div id="content" className="col-sm-10">
+            <Alert
+              code={ this.state.alert.code }
+              message={ this.state.alert.message }
+              show={ this.state.alert.show }
+            />
             { this.state.isFetchingData ?
-              <div className="alert alert-warning"><b>Подождите.</b> Идет загрузка данных...</div>
-              :
+               <div className="alert alert-warning"><b>Подождите.</b> Идет загрузка данных...</div>
+               : 
               <Table
                 data={ this.state.filteredData }
                 header={ this.state.header }
@@ -281,10 +339,15 @@ class App extends React.Component {
                 next={ this.nextPage }
                 previous={ this.previousPage }
                 page={ this.state.currentPage }
+                delete={ this.deleteService }
               />
             }
           </div>
-          <Modal filters={ this.state.filters } update={ this.updateData } />
+          <Modal
+            filters={ this.state.filters }
+            update={ this.updateData }
+            showAlert={ this.showAlert }
+          />
           </div>
       }
       </div>

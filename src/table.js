@@ -56,7 +56,7 @@ class Table extends React.Component {
                       >
                         <i className="fa fa-pencil" />
                       </button>
-                      <button className="btn btn-danger btn-xs">
+                      <button className="btn btn-danger btn-xs" onClick={ e => this.props.delete(item.id) }>
                         <i className="fa fa-trash" />
                       </button>
                     </td>
@@ -77,7 +77,8 @@ Table.propTypes = {
   counts: PropTypes.object.isRequired,
   next: PropTypes.func.isRequired,
   previous: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired
+  page: PropTypes.number.isRequired,
+  delete: PropTypes.func.isRequired
 }
 
 export default Table;
