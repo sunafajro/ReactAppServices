@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class Input extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
   dataSearch = (e) => {
     let value = e.target.value;
