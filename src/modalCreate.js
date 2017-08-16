@@ -99,7 +99,7 @@ class Modal extends React.Component {
       if(json.code === 200) {
         /* передаем услугу в родительское состояние */
         this.props.showAlert(json.code, json.message);
-        this.props.update(json.service);
+        this.props.update(json.id, '#create-service-modal');
         /* сбрасываем состояние на дефолтное */
         this.setState(this.initialState);
       } else {
@@ -142,7 +142,7 @@ class Modal extends React.Component {
     return (
       <div
         className="modal fade service-modal"
-        id="service-modal"
+        id="create-service-modal"
         tabIndex="-1"
         role="dialog"
         aria-labelledby="service-modal-label"
