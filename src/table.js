@@ -53,10 +53,14 @@ class Table extends React.Component {
                       <button
                         className="btn btn-warning btn-xs"
                         style={{ marginRight: "2px" }}
+                        onClick={ e => this.props.update(item) }
                       >
                         <i className="fa fa-pencil" />
                       </button>
-                      <button className="btn btn-danger btn-xs" onClick={ e => this.props.delete(item.id) }>
+                      <button
+                        className="btn btn-danger btn-xs"
+                        onClick={ e => this.props.delete(item.id) }
+                      >
                         <i className="fa fa-trash" />
                       </button>
                     </td>
@@ -78,6 +82,7 @@ Table.propTypes = {
   next: PropTypes.func.isRequired,
   previous: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
+  update: PropTypes.func.isRequired,
   delete: PropTypes.func.isRequired
 }
 
