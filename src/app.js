@@ -2,15 +2,19 @@ import React from 'react';
 import Table from './table';
 import Input from './input';
 import Select from './select';
-import Modal from './modal';
+import ModalCreate from './modalCreate';
+import ModalUpdate from './modalUpdate';
 import Filter from './filter';
 import Alert from './alert';
 
 class App extends React.Component {
 
   state = {
+    /* заголовки таблицы */
     header: [],
+    /* массив услуг */
     data: [],
+    /* списки для фильтрации */
     filters: {
       cities: [],
       types: [],
@@ -20,6 +24,7 @@ class App extends React.Component {
       studnorms: [],
       timenorms: []
     },
+    /* текущий фильтр  */
     filter: {
         id: '',
         city_id: '',
@@ -28,27 +33,39 @@ class App extends React.Component {
         eduage_id: '',
         eduform_id: ''
     },
+    /* количество услуг, начало/конец выборки */
     counts: {
       start: 0,
       end: 0,
       total: 0
     },
-    formElements: {},
-    filteredData: [],
     inProgress: false,
     isFetchingData: false,
     showCreateButton: false,
+    /* номер текущей страницы */
     currentPage: 1,
     error: false,
+    /* всплывающие уведомления */
     alert: {
       show: false,
       code: 0,
       message: ''
-    }
+    },
+    /* данные по услуги для редактирования */
+    updateService: {
+      id: '',
+      name: '',
+      city_id: '',
+      studnorm_id: '',
+      date: ''
+    },
+    serviceHistory: []
   };
+
   /* делаем дефолтную копию пустого фильтра */
   emptyFilter = { ...this.state.filter };
   emptyAlert = { ...this.state.alert };
+
   componentDidMount = () => {
     this.getInitialData();
   }
@@ -71,7 +88,6 @@ class App extends React.Component {
         header: json.tableHeader,
         data: json.tableData,
         filters: json.tableFilters,
-        filteredData: json.tableData,
         inProgress: false,
         counts: json.dataRange,
         showCreateButton: json.showCreateButton
@@ -138,7 +154,6 @@ class App extends React.Component {
     .then(json => {
       this.setState({
         data: json.tableData,
-        filteredData: json.tableData,
         isFetchingData: false,
         counts: json.dataRange,
         currentPage: num,
@@ -183,21 +198,21 @@ class App extends React.Component {
    * метод принимает объект с новой услугой и пропихивает ее в исходный массив услуг
    * @param {object} service
    */
-  updateData = (service) => {
+  updateData = (id, modalId) => {
     let filter = { ...this.state.filter };
-    filter.id = service.id;
+    filter.id = id;
     this.applyFilter(1, filter);
-    this.hideModal();
+    this.hideModal(modalId);
   }
 
   /* метод открывает модальное окно */
-  showModal = () => {
-    $('#service-modal').modal('show');
+  showModal = (id) => {
+    $(id).modal('show');
   }
 
   /* метод закрывает модальное окно */
-  hideModal = () => {
-    $('#service-modal').modal('hide');
+  hideModal = (id) => {
+    $(id).modal('hide');
   }
 
   /* метод показывает некоторые уведомления */
@@ -216,6 +231,48 @@ class App extends React.Component {
         alert: { ...this.emptyAlert}
       });
     }, 3000);
+  }
+
+  /* открывает модальное окно для создания новой услуги */
+  createService = () => {
+    this.showModal('#create-service-modal');
+  }
+
+  /* открывает модальное окно для редактирования услуги и передает в него данные по услуге */
+  updateService = (service) => {
+    let updateService = {
+      id: service.id,
+      name: service.nomination,
+      city_id: service.city_id,
+      studnorm_id: service.studnorm_id,
+      date: service.until,
+    };
+
+    const id = service.id;
+
+    fetch('/service/gethistory',
+    { 
+      method: 'POST',
+      accept: 'application/json',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id })
+    })
+    .then(response => response.json())
+    .then(json => {
+      if (json.code === 200) {
+        this.setState({
+          updateService,
+          serviceHistory: json.history
+        });
+        this.showModal('#update-service-modal');
+      }
+    })
+    .catch(err => {
+      this.setState({ error: true });
+    });    
   }
 
   /* метод удаляет услугу (помечает удаленной) */
@@ -262,7 +319,7 @@ class App extends React.Component {
               '' 
             }
             { this.state.showCreateButton ? 
-              <button className="btn btn-success btn-sm btn-block" onClick={ this.showModal }><i className="fa fa-plus" aria-hidden="true"></i> Добавить</button>
+              <button className="btn btn-success btn-sm btn-block" onClick={ e => this.createService() }><i className="fa fa-plus" aria-hidden="true"></i> Добавить</button>
               :
               ''
             }
@@ -333,17 +390,25 @@ class App extends React.Component {
                <div className="alert alert-warning"><b>Подождите.</b> Идет загрузка данных...</div>
                : 
               <Table
-                data={ this.state.filteredData }
+                data={ this.state.data }
                 header={ this.state.header }
                 counts={ this.state.counts }
                 next={ this.nextPage }
                 previous={ this.previousPage }
                 page={ this.state.currentPage }
+                update={ this.updateService }
                 delete={ this.deleteService }
               />
             }
           </div>
-          <Modal
+          <ModalCreate
+            filters={ this.state.filters }
+            update={ this.updateData }
+            showAlert={ this.showAlert }
+          />
+          <ModalUpdate
+            data={ this.state.updateService }
+            history={ this.state.serviceHistory }
             filters={ this.state.filters }
             update={ this.updateData }
             showAlert={ this.showAlert }
